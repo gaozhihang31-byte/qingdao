@@ -5,206 +5,290 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <title>Trip to Qingdao & Yantai</title>
+        <title>言言和她老公的山东之旅</title>
+        <link href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
         <style>
+            /* --- 浪漫深色主题 --- */
             :root {
-                --bg-color: #F2F2F7;
-                --text-primary: #1C1C1E;
-                --text-secondary: #8E8E93;
-                --system-blue: #007AFF;
-                --separator: #E5E5EA;
+                --bg: #0a0a0c;
+                --card-bg: rgba(30, 30, 35, 0.75);
+                --card-border: rgba(255, 255, 255, 0.1);
+                --text-main: #FFFFFF;
+                --text-sub: #9ca3af;
+                --accent: #FF2E63;
+                --accent-grad: linear-gradient(135deg, #FF2E63, #9D50FF);
+                --glass: blur(20px);
             }
+
             body {
-                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-                background-color: var(--bg-color);
-                color: var(--text-primary);
-                margin: 0; padding: 0;
-                padding-bottom: 100px;
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+                background-color: var(--bg); color: var(--text-main);
+                margin: 0; padding: 0; padding-bottom: 120px;
+                overflow-x: hidden; -webkit-tap-highlight-color: transparent;
             }
 
-            /* 导航栏 */
-            .nav-bar {
-                background: rgba(242, 242, 247, 0.9);
-                backdrop-filter: blur(10px);
-                position: sticky; top: 0; z-index: 100;
-                padding: 15px 20px;
-                border-bottom: 1px solid rgba(0,0,0,0.1);
+            /* 动画 */
+            @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } 60% { transform: scale(1); } }
+            @keyframes wave { 0% { box-shadow: 0 0 0 0 rgba(255, 46, 99, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 46, 99, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 46, 99, 0); } }
+
+            /* 头部 */
+            .header-box { padding: 60px 24px 20px 24px; }
+            .sub-tag {
+                display: inline-block; padding: 6px 12px; border-radius: 20px;
+                background: rgba(255, 46, 99, 0.2); color: #FF80AB;
+                font-size: 11px; font-weight: 700; letter-spacing: 1px;
+                margin-bottom: 10px; border: 1px solid rgba(255, 46, 99, 0.3);
             }
-            .nav-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
-            .nav-large-title { font-size: 28px; font-weight: 800; margin-top: 5px; }
-
-            /* 预算卡片 */
-            .budget-card {
-                margin: 20px; padding: 20px;
-                background: linear-gradient(135deg, #0A84FF, #5E5CE6);
-                border-radius: 20px; color: white;
-                box-shadow: 0 8px 20px rgba(10, 132, 255, 0.3);
+            .main-title {
+                font-size: 36px; font-weight: 800; line-height: 1.2;
+                background: linear-gradient(to right, #fff, #ffcce0);
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                margin: 0; display: flex; align-items: center; gap: 10px;
             }
-            .budget-row { display: flex; justify-content: space-between; align-items: flex-end; }
-            .budget-amt { font-size: 32px; font-weight: 700; }
-            .budget-progress { margin-top: 15px; height: 6px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden; }
-            .budget-bar { height: 100%; background: rgba(255,255,255,0.9); border-radius: 3px; }
+            .heart { font-size: 30px; animation: heartbeat 1.5s infinite; }
 
-            /* 行程 */
-            .day-container { margin: 25px 20px; }
-            .day-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; padding: 0 5px; }
-            .day-date { font-size: 20px; font-weight: 700; }
-            .day-weekday { font-size: 14px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
+            /* 状态卡 */
+            .status-card {
+                margin: 0 24px 24px; padding: 20px;
+                background: var(--card-bg); border: 1px solid var(--card-border);
+                backdrop-filter: var(--glass); border-radius: 24px;
+                display: flex; justify-content: space-between; align-items: center;
+            }
+            .timer-box div:first-child { font-size: 12px; color: var(--text-sub); text-transform: uppercase; }
+            .timer-box div:last-child { font-size: 20px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+            .music-btn {
+                width: 48px; height: 48px; border-radius: 50%;
+                background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+                display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
+            }
+            .music-btn.playing { border-color: #FF2E63; background: rgba(255,46,99,0.2); animation: wave 2s infinite; }
 
-            .card { background: #fff; border-radius: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
+            /* 地图容器 - 移除滤镜，使用原生暗色地图 */
+            .map-container {
+                margin: 0 24px 24px; height: 200px;
+                background: #1c1c1e; border-radius: 24px; border: 1px solid var(--card-border);
+                overflow: hidden; position: relative;
+                z-index: 1; /* 确保不被遮挡 */
+            }
+            #map { width: 100%; height: 100%; background: #222; } /* 给一个默认背景色防止闪烁 */
+            .map-tag { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.7); color:white; padding: 4px 10px; border-radius: 10px; font-size: 10px; z-index: 500; font-weight: bold; }
+
+            /* 列表通用 */
+            .list-box { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(10px); }
+            .list-item { padding: 14px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .list-item:last-child { border-bottom: none; }
+
+            /* 清单 */
+            .check-section { margin: 0 24px 24px; }
+            .check-head { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 0 5px; }
+            .c-circle { width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; margin-right: 12px; position: relative; }
+            .list-item.done .c-circle { border-color: #32D74B; background: rgba(50,215,75,0.2); }
+            .list-item.done .c-text { text-decoration: line-through; color: #666; }
+            .c-del { margin-left: auto; color: #FF453A; padding: 5px; display: none; }
+            .list-item.editing .c-del { display: block; }
+
+            /* 钱包 */
+            .wallet-card {
+                margin: 0 24px 30px; padding: 24px;
+                background: var(--accent-grad); border-radius: 24px;
+                color: white; position: relative; overflow: hidden;
+                box-shadow: 0 15px 40px -10px rgba(255, 46, 99, 0.4);
+            }
+            .wallet-card::after { content:''; position: absolute; top:-50%; right:-50%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%); filter: blur(40px); }
+            .add-btn { position: absolute; top: 24px; right: 24px; width: 32px; height: 32px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
             /* 天气 */
-            .weather-widget {
-                padding: 15px 20px; background: linear-gradient(to right, #E0F7FA, #F0F4F8);
-                display: flex; align-items: center; border-bottom: 1px solid var(--separator);
-            }
-            .weather-temp { font-weight: 600; font-size: 17px; margin-left: 10px; }
-            .weather-desc { font-size: 13px; color: var(--text-secondary); margin-left: auto; }
+            .weather-wrap { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 24px; scrollbar-width: none; }
+            .w-card { min-width: 90px; height: 100px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
 
-            /* 列表 */
-            .activity-list { list-style: none; padding: 0; margin: 0; }
-            .activity-item { display: flex; padding: 16px 20px; border-bottom: 1px solid var(--separator); }
-            .activity-item:last-child { border-bottom: none; }
+            /* 行程 */
+            .day-group { margin-bottom: 30px; }
+            .day-meta { padding: 0 28px 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+            .d-date { font-size: 20px; font-weight: 700; color: #fff; }
+            .act-row { padding: 16px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .act-time { width: 50px; font-weight: 600; color: var(--text-sub); font-size: 14px; }
+            .act-info { flex: 1; }
+            .act-title { font-size: 16px; margin-bottom: 4px; color: #fff; }
+            .act-sub { font-size: 12px; color: var(--text-sub); background: rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 6px; }
+            .edit-badge { color: #FF453A; font-size: 12px; margin-left: 10px; display: none; }
+            .editing .edit-badge { display: block; }
 
-            .time-col { width: 50px; font-weight: 600; color: var(--text-secondary); font-size: 15px; flex-shrink: 0; padding-top: 2px; }
-            .content-col { flex-grow: 1; margin-left: 10px; }
-            .act-title { font-size: 17px; font-weight: 500; margin-bottom: 4px; }
-            .act-sub { font-size: 13px; color: var(--text-secondary); background: #F2F2F7; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+            /* 底部栏 */
+            .dock { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); padding: 10px 20px; border-radius: 100px; display: flex; gap: 20px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            .dock-icon { font-size: 22px; cursor: pointer; opacity: 0.8; color: white; transition: 0.2s; }
+            .dock-icon.active { color: #FF2E63; opacity: 1; transform: scale(1.2); }
 
-            /* 图标 */
-            .icon { margin-right: 5px; font-style: normal; }
+            /* 弹窗 */
+            .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 999; display: none; align-items: center; justify-content: center; }
+            .modal-bg.show { display: flex; }
+            .modal-box { background: #1C1C1E; width: 80%; border-radius: 24px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); }
+            input { width: 100%; background: #2C2C2E; border: none; padding: 14px; border-radius: 12px; color: white; margin-bottom: 12px; box-sizing: border-box; font-size: 16px; }
+            .btn-row { display: flex; gap: 10px; margin-top: 10px; }
+            .btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; font-size: 16px; }
+            .btn-ok { background: var(--accent); color: white; }
 
-            /* 编辑模式 */
-            .editing .act-title, .editing .act-sub, .editing .time-col { 
-                background: rgba(0,122,255,0.1); border-radius: 4px; min-width: 20px; 
-            }
-            .delete-btn { display: none; color: #FF3B30; font-weight: bold; margin-left: 10px; cursor: pointer; }
-            .editing .delete-btn { display: block; }
-
-            /* 底部按钮 */
-            .bottom-bar {
-                position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-                background: rgba(28,28,30,0.9); backdrop-filter: blur(20px);
-                padding: 10px 15px; border-radius: 30px; display: flex; gap: 10px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 200;
-            }
-            .btn { background: none; border: none; color: white; font-weight: 600; font-size: 14px; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
-            .btn:active { background: rgba(255,255,255,0.2); }
-            .btn.save { color: #30D158; }
-            .btn.reset { color: #FF453A; }
+            /* 打车卡 */
+            .taxi-btns { display: flex; gap: 10px; margin: 0 24px 24px; }
+            .taxi-item { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); padding: 15px; border-radius: 16px; text-align: center; font-weight: 600; cursor: pointer; }
+            .taxi-card { background: white; color: black; padding: 40px 20px; border-radius: 24px; text-align: center; width: 85%; }
         </style>
     </head>
     <body>
-        <div id="app"></div>
 
-        <div class="bottom-bar">
-            <button class="btn" id="editBtn" onclick="toggleEdit()">编辑</button>
-            <button class="btn save" id="saveBtn" onclick="saveData()" style="display:none">保存</button>
-            <button class="btn reset" id="resetBtn" onclick="resetData()" style="display:none">重置</button>
+        <div class="header-box">
+            <div class="sub-tag">2026 ROMANTIC TRIP</div>
+            <h1 class="main-title">言言和她老公的山东之旅 <span class="heart">❤️</span></h1>
         </div>
 
+        <div class="status-card">
+            <div class="timer-box"><div>Next Adventure</div><div id="countdown">Calculating...</div></div>
+            <div class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</div>
+        </div>
+
+        <div class="weather-wrap" id="weatherBox"></div>
+
+        <div class="map-container" onclick="refreshMap()">
+            <div class="map-tag">Travel Route</div>
+            <div id="map"></div>
+        </div>
+
+        <div class="taxi-btns">
+            <div class="taxi-item" onclick="showTaxi(0)">🚖 青岛酒店</div>
+            <div class="taxi-item" onclick="showTaxi(1)">🚖 烟台酒店</div>
+        </div>
+
+        <div class="check-section">
+            <div class="check-head"><span style="font-weight:700;color:white">行前清单</span><span style="font-size:12px; color:#FF80AB; cursor:pointer" onclick="openModal('addCheckModal')">＋ 添加</span></div>
+            <div class="list-box" id="checkList"></div>
+        </div>
+
+        <div class="wallet-card">
+            <div class="add-btn" onclick="openModal('exModal')">＋</div>
+            <div style="font-size:13px;opacity:0.8;font-weight:600">REMAINING BUDGET</div>
+            <div style="font-size:40px;font-weight:800;margin:10px 0" id="remainBudget">¥...</div>
+            <div style="font-size:12px;opacity:0.6">Total Spent: ¥<span id="totalSpent"></span></div>
+        </div>
+
+        <div id="itineraryBox"></div>
+
+        <div class="dock">
+            <div class="dock-icon" onclick="window.scrollTo({top:0, behavior:'smooth'})">🏠</div>
+            <div class="dock-icon" id="editBtn" onclick="toggleEdit()">✎</div>
+            <div class="dock-icon" onclick="resetAll()">↻</div>
+        </div>
+
+        <div class="modal-bg" id="actModal">
+            <div class="modal-box">
+                <h3>编辑活动</h3>
+                <input id="actTime"><input id="actText"><input id="actSub">
+                <div class="btn-row"><button class="btn" onclick="deleteAct()">删除</button><button class="btn btn-ok" onclick="saveAct()">保存</button></div>
+                <div style="text-align:center;margin-top:10px;font-size:12px;color:#666" onclick="closeModal('actModal')">取消</div>
+            </div>
+        </div>
+        <div class="modal-bg" id="exModal">
+            <div class="modal-box"><h3>记一笔</h3><input id="exName" placeholder="项目"><input id="exCost" type="number" placeholder="金额"><div class="btn-row"><button class="btn" onclick="closeModal('exModal')">取消</button><button class="btn btn-ok" onclick="saveExpense()">保存</button></div></div>
+        </div>
+        <div class="modal-bg" id="addCheckModal">
+            <div class="modal-box"><h3>添加物品</h3><input id="newCheckText"><div class="btn-row"><button class="btn" onclick="closeModal('addCheckModal')">取消</button><button class="btn btn-ok" onclick="addCheckItem()">添加</button></div></div>
+        </div>
+        <div class="modal-bg" id="taxiModal" onclick="this.classList.remove('show')">
+            <div class="taxi-card" onclick="event.stopPropagation()"><div style="color:#888;margin-bottom:10px">SHOW TO DRIVER</div><div style="font-size:26px;font-weight:800;margin-bottom:20px" id="taxiBigName"></div><div style="font-size:18px;background:#f5f5f5;padding:15px;border-radius:12px" id="taxiBigAddr"></div></div>
+        </div>
+
+        <audio id="bgm" loop><source src="https://music.163.com/song/media/outer/url?id=1386470634.mp3"></audio>
+
+        <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
         <script>
-            const DEFAULT_DATA = {"title": "Trip to Qingdao & Yantai", "subtitle": "高志航 & 仇乐言 · 2026", "budget": {"total": 4000, "spent": 1740.6399999999999}, "locations": {"青岛": {"lat": 36.0671, "lon": 120.3826}, "烟台": {"lat": 37.4638, "lon": 121.4479}, "高邮": {"lat": 32.7833, "lon": 119.4333}}, "itinerary": [{"id": "day1", "date": "2026-02-09", "weekday": "周一", "city": "青岛", "title": "抵达青岛 & 入住", "activities": [{"time": "09:10", "type": "transport", "text": "高邮站出发 (D2866)", "sub": "05车 11A | 双人票: ¥386"}, {"time": "14:30", "type": "hotel", "text": "入住: 海友青岛五四广场", "sub": "入住码: GE2243 | 家庭房"}, {"time": "16:00", "type": "warning", "text": "避雷提醒", "sub": "不去大学路，人多且累"}, {"time": "16:30", "type": "sight", "text": "奥帆中心 & 情人坝", "sub": "日落绝佳观测点"}]}, {"id": "day2", "date": "2026-02-10", "weekday": "周二", "city": "青岛", "title": "小麦岛 & 八大关", "activities": [{"time": "09:00", "type": "sight", "text": "八大关风景区", "sub": "万国建筑群"}, {"time": "12:00", "type": "food", "text": "午餐：船歌鱼水饺", "sub": "推荐墨鱼水饺"}, {"time": "14:30", "type": "sight", "text": "小麦岛公园", "sub": "现实版'塞尔达'草地"}]}, {"id": "day3", "date": "2026-02-11", "weekday": "周三", "city": "烟台", "title": "转战烟台", "activities": [{"time": "10:29", "type": "transport", "text": "青岛站出发 (C6568)", "sub": "双人票: ¥160 | 老火车站"}, {"time": "14:00", "type": "hotel", "text": "入住: 你好烟台二马路", "sub": "入住码: DGJ253 | 海景房"}, {"time": "18:00", "type": "food", "text": "晚餐: 烟台小海鲜", "sub": "滨海广场附近"}]}, {"id": "day4", "date": "2026-02-12", "weekday": "周四", "city": "烟台", "title": "养马岛环岛", "activities": [{"time": "09:00", "type": "transport", "text": "前往养马岛", "sub": "打车约40分钟"}, {"time": "10:30", "type": "activity", "text": "租电动车环岛", "sub": "海螺洞、樟岛、秦风崖"}, {"time": "16:00", "type": "sight", "text": "返程看日落", "sub": "海风大，注意保暖"}]}, {"id": "day5", "date": "2026-02-13", "weekday": "周五", "city": "高邮", "title": "返程", "activities": [{"time": "15:12", "type": "transport", "text": "D2872 (烟台 -> 高邮)", "sub": "⚠️ 需购双人票"}, {"time": "19:42", "type": "home", "text": "抵达高邮", "sub": "行程结束"}]}]};
-            let appData = {};
-            let isEditing = false;
-            let weatherCache = {};
-            const ICONS = { transport: "🚄", hotel: "🏨", sight: "📷", food: "🍴", activity: "🚲", home: "🏠", warning: "⚠️" };
+            const DATA = {"title": "言言和她老公的山东之旅", "subtitle": "2026 ROMANTIC TRIP", "start_date": "2026-02-09 09:10:00", "end_date": "2026-02-13 19:42:00", "music_url": "https://music.163.com/song/media/outer/url?id=1386470634.mp3", "budget": {"total": 4000, "fixed_spent": 1740.64}, "weather_locs": {"青岛": {"lat": 36.0671, "lon": 120.3826}, "烟台": {"lat": 37.4638, "lon": 121.4479}, "高邮": {"lat": 32.7833, "lon": 119.4333}}, "hotels": [{"city": "青岛", "name": "海友酒店(五四广场店)", "address": "市南区 南京路33号"}, {"city": "烟台", "name": "你好酒店(滨海广场店)", "address": "芝罘区 二马路95号"}], "map_points": {"高邮": [32.7833, 119.4333], "青岛": [36.0671, 120.3826], "烟台": [37.4638, 121.4479], "养马岛": [37.4526, 121.6166]}, "default_checklist": [{"text": "身份证 (原件)", "done": false}, {"text": "学生证", "done": false}, {"text": "充电宝", "done": false}, {"text": "自拍杆", "done": false}], "itinerary": [{"date": "2026-02-09", "weekday": "周一", "city": "青岛", "title": "抵达 & 入住", "activities": [{"time": "09:10", "type": "transport", "text": "高邮站出发", "sub": "D2866 (05车11A)"}, {"time": "14:30", "type": "hotel", "text": "海友酒店入住", "sub": "码: GE2243"}, {"time": "16:30", "type": "sight", "text": "奥帆中心日落", "sub": "情人坝"}]}, {"date": "2026-02-10", "weekday": "周二", "city": "青岛", "title": "小麦岛 & 八大关", "activities": [{"time": "09:00", "type": "sight", "text": "八大关", "sub": "万国建筑"}, {"time": "14:30", "type": "sight", "text": "小麦岛", "sub": "草地音乐会"}]}, {"date": "2026-02-11", "weekday": "周三", "city": "烟台", "title": "转战烟台", "activities": [{"time": "10:29", "type": "transport", "text": "前往烟台", "sub": "C6568 (04车08D)"}, {"time": "14:00", "type": "hotel", "text": "你好酒店入住", "sub": "码: DGJ253"}]}, {"date": "2026-02-12", "weekday": "周四", "city": "烟台", "title": "养马岛环岛", "activities": [{"time": "10:30", "type": "activity", "text": "租车环岛", "sub": "海螺洞"}, {"time": "16:00", "type": "sight", "text": "看日落", "sub": "返程"}]}, {"date": "2026-02-13", "weekday": "周五", "city": "高邮", "title": "返程", "activities": [{"time": "15:12", "type": "transport", "text": "D2872 返程", "sub": "烟台->高邮"}]}]};
+            let state = { expenses: [], checklist: JSON.parse(JSON.stringify(DATA.default_checklist)), itinerary: JSON.parse(JSON.stringify(DATA.itinerary)), editing: false };
+            let target = {d:-1, a:-1};
+            let map = null;
 
             async function init() {
-                const local = localStorage.getItem('appleTrip_final');
-                appData = local ? JSON.parse(local) : JSON.parse(JSON.stringify(DEFAULT_DATA));
-                render();
-                await fetchWeather();
+                const local = localStorage.getItem('fast_trip_final');
+                if(local) state = {...state, ...JSON.parse(local)};
+
+                renderTimer(); renderWeather(); renderBudget(); renderChecklist(); renderItinerary();
+                setTimeout(initMap, 500); // 确保容器渲染后再加载地图
             }
 
-            async function fetchWeather() {
-                const locs = {"title": "Trip to Qingdao & Yantai", "subtitle": "高志航 & 仇乐言 · 2026", "budget": {"total": 4000, "spent": 1740.6399999999999}, "locations": {"青岛": {"lat": 36.0671, "lon": 120.3826}, "烟台": {"lat": 37.4638, "lon": 121.4479}, "高邮": {"lat": 32.7833, "lon": 119.4333}}, "itinerary": [{"id": "day1", "date": "2026-02-09", "weekday": "周一", "city": "青岛", "title": "抵达青岛 & 入住", "activities": [{"time": "09:10", "type": "transport", "text": "高邮站出发 (D2866)", "sub": "05车 11A | 双人票: ¥386"}, {"time": "14:30", "type": "hotel", "text": "入住: 海友青岛五四广场", "sub": "入住码: GE2243 | 家庭房"}, {"time": "16:00", "type": "warning", "text": "避雷提醒", "sub": "不去大学路，人多且累"}, {"time": "16:30", "type": "sight", "text": "奥帆中心 & 情人坝", "sub": "日落绝佳观测点"}]}, {"id": "day2", "date": "2026-02-10", "weekday": "周二", "city": "青岛", "title": "小麦岛 & 八大关", "activities": [{"time": "09:00", "type": "sight", "text": "八大关风景区", "sub": "万国建筑群"}, {"time": "12:00", "type": "food", "text": "午餐：船歌鱼水饺", "sub": "推荐墨鱼水饺"}, {"time": "14:30", "type": "sight", "text": "小麦岛公园", "sub": "现实版'塞尔达'草地"}]}, {"id": "day3", "date": "2026-02-11", "weekday": "周三", "city": "烟台", "title": "转战烟台", "activities": [{"time": "10:29", "type": "transport", "text": "青岛站出发 (C6568)", "sub": "双人票: ¥160 | 老火车站"}, {"time": "14:00", "type": "hotel", "text": "入住: 你好烟台二马路", "sub": "入住码: DGJ253 | 海景房"}, {"time": "18:00", "type": "food", "text": "晚餐: 烟台小海鲜", "sub": "滨海广场附近"}]}, {"id": "day4", "date": "2026-02-12", "weekday": "周四", "city": "烟台", "title": "养马岛环岛", "activities": [{"time": "09:00", "type": "transport", "text": "前往养马岛", "sub": "打车约40分钟"}, {"time": "10:30", "type": "activity", "text": "租电动车环岛", "sub": "海螺洞、樟岛、秦风崖"}, {"time": "16:00", "type": "sight", "text": "返程看日落", "sub": "海风大，注意保暖"}]}, {"id": "day5", "date": "2026-02-13", "weekday": "周五", "city": "高邮", "title": "返程", "activities": [{"time": "15:12", "type": "transport", "text": "D2872 (烟台 -> 高邮)", "sub": "⚠️ 需购双人票"}, {"time": "19:42", "type": "home", "text": "抵达高邮", "sub": "行程结束"}]}]}.locations;
-                const cities = [...new Set(appData.itinerary.map(d => d.city))];
+            // --- 地图修复 (使用原生深色图源) ---
+            function initMap() {
+                if(map) return;
+                map = L.map('map', {zoomControl:false, attributionControl:false}).setView([36.5, 121.0], 7);
+                // 使用 CartoDB Dark Matter 原生深色地图，速度快且不需要 CSS 反色
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(map);
 
-                for (let city of cities) {
-                    if (locs[city]) {
-                        try {
-                            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${locs[city].lat}&longitude=${locs[city].lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`);
-                            const data = await res.json();
-                            weatherCache[city] = data.daily;
-                        } catch(e) { console.log("Weather error", e); }
-                    }
-                }
-                render();
-            }
-
-            function getWeather(city, dateStr) {
-                if (!weatherCache[city]) return null;
-                const idx = weatherCache[city].time.indexOf(dateStr);
-                if (idx === -1) return null;
-
-                const wmo = { 0:"☀️", 1:"🌤", 2:"☁️", 3:"☁️", 45:"🌫", 51:"🌧", 61:"🌧", 71:"❄️" };
-                const code = weatherCache[city].weathercode[idx];
-                const min = weatherCache[city].temperature_2m_min[idx];
-                const max = weatherCache[city].temperature_2m_max[idx];
-
-                let tips = "舒适";
-                const avg = (min + max)/2;
-                if (avg < 5) tips = "穿羽绒服";
-                else if (avg < 15) tips = "穿大衣";
-
-                return { icon: wmo[code]||"?", temp: `${min}°~${max}°`, tips: tips };
-            }
-
-            function render() {
-                const pct = Math.min((appData.budget.spent / appData.budget.total)*100, 100);
-                const remain = appData.budget.total - appData.budget.spent;
-
-                let html = `
-                    <div class="nav-bar">
-                        <div class="nav-title">${appData.subtitle}</div>
-                        <div class="nav-large-title">${appData.title}</div>
-                    </div>
-
-                    <div class="budget-card">
-                        <div class="budget-row">
-                            <div><div style="opacity:0.8;font-size:12px">剩余预算</div><div class="budget-amt">¥${remain.toFixed(0)}</div></div>
-                            <div style="text-align:right"><div style="opacity:0.8;font-size:12px">已用</div><div style="font-weight:600">¥${appData.budget.spent.toFixed(0)}</div></div>
-                        </div>
-                        <div class="budget-progress"><div class="budget-bar" style="width:${pct}%"></div></div>
-                    </div>
-                `;
-
-                appData.itinerary.forEach((day, dIdx) => {
-                    const w = getWeather(day.city, day.date);
-                    let wHtml = w ? `<div class="weather-widget"><span>${w.icon}</span><span class="weather-temp">${w.temp}</span><span class="weather-desc">${w.tips}</span></div>` : `<div class="weather-widget" style="font-size:12px;color:#999">正在获取天气...</div>`;
-
-                    let actsHtml = "";
-                    day.activities.forEach((act, aIdx) => {
-                        actsHtml += `
-                        <li class="activity-item">
-                            <div class="time-col" contenteditable="${isEditing}" onblur="upd(${dIdx},${aIdx},'time',this.innerText)">${act.time}</div>
-                            <div class="content-col">
-                                <div class="act-title"><span class="icon">${ICONS[act.type]||'📍'}</span><span contenteditable="${isEditing}" onblur="upd(${dIdx},${aIdx},'text',this.innerText)">${act.text}</span></div>
-                                <div class="act-sub" contenteditable="${isEditing}" onblur="upd(${dIdx},${aIdx},'sub',this.innerText)">${act.sub}</div>
-                            </div>
-                            <div class="delete-btn" onclick="del(${dIdx},${aIdx})">✕</div>
-                        </li>`;
-                    });
-
-                    html += `
-                    <div class="day-container ${isEditing?'editing':''}">
-                        <div class="day-header">
-                            <div class="day-date">${day.date.split('-')[1]}月${day.date.split('-')[2]}日</div>
-                            <div class="day-weekday">${day.weekday} · ${day.city}</div>
-                        </div>
-                        <div class="card">${wHtml}<ul class="activity-list">${actsHtml}</ul></div>
-                    </div>`;
+                const pts = [];
+                Object.values(DATA.map_points).forEach(p => {
+                    // 使用 Canvas 绘制圆形，不加载外部图片 marker，速度极快
+                    L.circleMarker(p, {radius:6, color:'#FF2E63', fillColor:'#FF2E63', fillOpacity:1}).addTo(map);
+                    pts.push(p);
                 });
+                if(pts.length>1) L.polyline(pts, {color:'#FF2E63', weight:3, dashArray:'5,5'}).addTo(map);
+            }
+            function refreshMap() { if(map) map.invalidateSize(); }
 
-                document.getElementById('app').innerHTML = html;
+            // --- 列表编辑 ---
+            function toggleEdit() { state.editing=!state.editing; document.getElementById('editBtn').classList.toggle('active', state.editing); renderItinerary(); renderChecklist(); }
+
+            function renderItinerary() {
+                document.getElementById('itineraryBox').innerHTML = state.itinerary.map((day, dIdx) => `
+                    <div class="day-group">
+                        <div class="day-meta"><div class="d-date">${day.date.slice(5)} ${day.weekday}</div><div class="d-city" style="color:#FF80AB;font-weight:700">${day.city}</div></div>
+                        <div class="list-box">
+                            ${day.activities.map((act, aIdx) => `
+                                <div class="act-row" onclick="clickAct(${dIdx}, ${aIdx})">
+                                    <div class="act-time">${act.time}</div>
+                                    <div class="act-info"><div class="act-title">${act.text}</div><div class="act-sub">${act.sub}</div></div>
+                                    ${state.editing ? '<div class="edit-badge">✎</div>' : ''}
+                                </div>
+                            `).join('')}
+                            <div style="padding:15px;text-align:center;color:#FF80AB;font-size:12px;border-top:1px solid rgba(255,255,255,0.05);cursor:pointer" onclick="addAct(${dIdx})">＋ 添加活动</div>
+                        </div>
+                    </div>
+                `).join('');
             }
 
-            window.toggleEdit = () => { isEditing = !isEditing; document.getElementById('editBtn').innerText = isEditing ? "完成" : "编辑"; document.getElementById('saveBtn').style.display = isEditing ? "block" : "none"; document.getElementById('resetBtn').style.display = isEditing ? "block" : "none"; render(); };
-            window.upd = (d,a,k,v) => { appData.itinerary[d].activities[a][k] = v; };
-            window.del = (d,a) => { if(confirm("删除?")) { appData.itinerary[d].activities.splice(a,1); render(); } };
-            window.saveData = () => { localStorage.setItem('appleTrip_final', JSON.stringify(appData)); alert("已保存"); isEditing=false; toggleEdit(); };
-            window.resetData = () => { if(confirm("重置?")) { localStorage.removeItem('appleTrip_final'); init(); } };
+            function clickAct(d, a) { target = {d, a}; const act = state.itinerary[d].activities[a]; document.getElementById('actTime').value=act.time; document.getElementById('actText').value=act.text; document.getElementById('actSub').value=act.sub; openModal('actModal'); }
+            function saveAct() { const t=document.getElementById('actTime').value, tx=document.getElementById('actText').value, s=document.getElementById('actSub').value; state.itinerary[target.d].activities[target.a]={time:t, text:tx, sub:s}; save(); renderItinerary(); closeModal('actModal'); }
+            function deleteAct() { if(confirm('删除?')) { state.itinerary[target.d].activities.splice(target.a,1); save(); renderItinerary(); closeModal('actModal'); } }
+            function addAct(d) { state.itinerary[d].activities.push({time:"00:00", text:"新计划", sub:"点击修改"}); save(); renderItinerary(); clickAct(d, state.itinerary[d].activities.length-1); }
+
+            // --- 清单 ---
+            function renderChecklist() {
+                document.getElementById('checkList').innerHTML = state.checklist.map((item, idx) => `
+                    <div class="list-item ${item.done?'done':''} ${state.editing?'editing':''}">
+                        <div class="c-circle" onclick="toggleCheck(${idx})"></div>
+                        <div class="c-text" style="flex:1;color:white" onclick="toggleCheck(${idx})">${item.text}</div>
+                        ${state.editing ? `<div class="c-del" onclick="delCheck(${idx})">✕</div>` : ''}
+                    </div>
+                `).join('');
+            }
+            function toggleCheck(idx) { state.checklist[idx].done=!state.checklist[idx].done; save(); renderChecklist(); }
+            function delCheck(idx) { state.checklist.splice(idx,1); save(); renderChecklist(); }
+            function addCheckItem() { const t=document.getElementById('newCheckText').value; if(t){ state.checklist.push({text:t,done:false}); save(); renderChecklist(); closeModal('addCheckModal'); document.getElementById('newCheckText').value=''; } }
+
+            // --- 预算 & 其他 ---
+            function renderBudget() { const u=state.expenses.reduce((s,i)=>s+Number(i.cost),0); const t=DATA.budget.fixed_spent+u; document.getElementById('remainBudget').innerText = `¥${(DATA.budget.total-t).toFixed(0)}`; document.getElementById('totalSpent').innerText=t.toFixed(0); }
+            function saveExpense() { const n=document.getElementById('exName').value, c=document.getElementById('exCost').value; if(n&&c){ state.expenses.push({name:n, cost:c}); save(); renderBudget(); closeModal('exModal'); document.getElementById('exName').value='';document.getElementById('exCost').value=''; } }
+
+            function renderTimer() { setInterval(()=>{ const diff=new Date(DATA.start_date)-new Date(); const d=Math.floor(diff/86400000); document.getElementById('countdown').innerText=diff>0?`${d} DAYS`:"Enjoy!"; },1000); }
+            function renderWeather() { 
+                const box=document.getElementById('weatherBox'); box.innerHTML=Object.keys(DATA.weather_locs).map(c=>`<div class="w-card" id="w-${c}"><div style="font-size:12px;opacity:0.7">${c}</div><div>--°</div></div>`).join('');
+                Object.keys(DATA.weather_locs).forEach(async c=>{
+                    try{const{lat,lon}=DATA.weather_locs[c];const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);const d=await r.json();const w={0:"☀️",1:"🌤",2:"☁️",3:"☁️",51:"🌧"};document.getElementById(`w-${c}`).innerHTML=`<div style="font-size:12px;font-weight:700;color:#FF80AB">${c}</div><div style="font-size:24px">${w[d.current_weather.weathercode]||"?"}</div><div style="font-size:18px">${Math.round(d.current_weather.temperature)}°</div>`;}catch(e){}
+                });
+            }
+
+            function openModal(id){document.getElementById(id).classList.add('show')}
+            function closeModal(id){document.getElementById(id).classList.remove('show')}
+            function showTaxi(i){const h=DATA.hotels[i]; document.getElementById('taxiBigName').innerText=h.name; document.getElementById('taxiBigAddr').innerText=h.address; openModal('taxiModal'); }
+            function toggleMusic(){const a=document.getElementById('bgm'), b=document.getElementById('musicBtn'); if(a.paused){a.play();b.classList.add('playing')}else{a.pause();b.classList.remove('playing')}}
+            function save(){localStorage.setItem('fast_trip_final', JSON.stringify(state))}
+            function resetAll(){if(confirm('Reset?')){localStorage.removeItem('fast_trip_final');location.reload()}}
 
             init();
         </script>
