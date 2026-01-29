@@ -1,0 +1,213 @@
+
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>Trip to Qingdao & Yantai</title>
+        <style>
+            :root {
+                --bg-color: #F2F2F7;
+                --text-primary: #1C1C1E;
+                --text-secondary: #8E8E93;
+                --system-blue: #007AFF;
+                --separator: #E5E5EA;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+                background-color: var(--bg-color);
+                color: var(--text-primary);
+                margin: 0; padding: 0;
+                padding-bottom: 100px;
+            }
+
+            /* 导航栏 */
+            .nav-bar {
+                background: rgba(242, 242, 247, 0.9);
+                backdrop-filter: blur(10px);
+                position: sticky; top: 0; z-index: 100;
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+            }
+            .nav-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
+            .nav-large-title { font-size: 28px; font-weight: 800; margin-top: 5px; }
+
+            /* 预算卡片 */
+            .budget-card {
+                margin: 20px; padding: 20px;
+                background: linear-gradient(135deg, #0A84FF, #5E5CE6);
+                border-radius: 20px; color: white;
+                box-shadow: 0 8px 20px rgba(10, 132, 255, 0.3);
+            }
+            .budget-row { display: flex; justify-content: space-between; align-items: flex-end; }
+            .budget-amt { font-size: 32px; font-weight: 700; }
+            .budget-progress { margin-top: 15px; height: 6px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden; }
+            .budget-bar { height: 100%; background: rgba(255,255,255,0.9); border-radius: 3px; }
+
+            /* 行程 */
+            .day-container { margin: 25px 20px; }
+            .day-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; padding: 0 5px; }
+            .day-date { font-size: 20px; font-weight: 700; }
+            .day-weekday { font-size: 14px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
+
+            .card { background: #fff; border-radius: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
+
+            /* 天气 */
+            .weather-widget {
+                padding: 15px 20px; background: linear-gradient(to right, #E0F7FA, #F0F4F8);
+                display: flex; align-items: center; border-bottom: 1px solid var(--separator);
+            }
+            .weather-temp { font-weight: 600; font-size: 17px; margin-left: 10px; }
+            .weather-desc { font-size: 13px; color: var(--text-secondary); margin-left: auto; }
+
+            /* 列表 */
+            .activity-list { list-style: none; padding: 0; margin: 0; }
+            .activity-item { display: flex; padding: 16px 20px; border-bottom: 1px solid var(--separator); }
+            .activity-item:last-child { border-bottom: none; }
+
+            .time-col { width: 50px; font-weight: 600; color: var(--text-secondary); font-size: 15px; flex-shrink: 0; padding-top: 2px; }
+            .content-col { flex-grow: 1; margin-left: 10px; }
+            .act-title { font-size: 17px; font-weight: 500; margin-bottom: 4px; }
+            .act-sub { font-size: 13px; color: var(--text-secondary); background: #F2F2F7; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+
+            /* 图标 */
+            .icon { margin-right: 5px; font-style: normal; }
+
+            /* 编辑模式 */
+            .editing .act-title, .editing .act-sub, .editing .time-col { 
+                background: rgba(0,122,255,0.1); border-radius: 4px; min-width: 20px; 
+            }
+            .delete-btn { display: none; color: #FF3B30; font-weight: bold; margin-left: 10px; cursor: pointer; }
+            .editing .delete-btn { display: block; }
+
+            /* 底部按钮 */
+            .bottom-bar {
+                position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+                background: rgba(28,28,30,0.9); backdrop-filter: blur(20px);
+                padding: 10px 15px; border-radius: 30px; display: flex; gap: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 200;
+            }
+            .btn { background: none; border: none; color: white; font-weight: 600; font-size: 14px; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
+            .btn:active { background: rgba(255,255,255,0.2); }
+            .btn.save { color: #30D158; }
+            .btn.reset { color: #FF453A; }
+        </style>
+    </head>
+    <body>
+        <div id="app"></div>
+
+        <div class="bottom-bar">
+            <button class="btn" id="editBtn" onclick="toggleEdit()">编辑</button>
+            <button class="btn save" id="saveBtn" onclick="saveData()" style="display:none">保存</button>
+            <button class="btn reset" id="resetBtn" onclick="resetData()" style="display:none">重置</button>
+        </div>
+
+        <script>
+            const DEFAULT_DATA = {"title": "Trip to Qingdao & Yantai", "subtitle": "高志航 & 仇乐言 · 2026", "budget": {"total": 4000, "spent": 1740.6399999999999}, "locations": {"青岛": {"lat": 36.0671, "lon": 120.3826}, "烟台": {"lat": 37.4638, "lon": 121.4479}, "高邮": {"lat": 32.7833, "lon": 119.4333}}, "itinerary": [{"id": "day1", "date": "2026-02-09", "weekday": "周一", "city": "青岛", "title": "抵达青岛 & 入住", "activities": [{"time": "09:10", "type": "transport", "text": "高邮站出发 (D2866)", "sub": "05车 11A | 双人票: ¥386"}, {"time": "14:30", "type": "hotel", "text": "入住: 海友青岛五四广场", "sub": "入住码: GE2243 | 家庭房"}, {"time": "16:00", "type": "warning", "text": "避雷提醒", "sub": "不去大学路，人多且累"}, {"time": "16:30", "type": "sight", "text": "奥帆中心 & 情人坝", "sub": "日落绝佳观测点"}]}, {"id": "day2", "date": "2026-02-10", "weekday": "周二", "city": "青岛", "title": "小麦岛 & 八大关", "activities": [{"time": "09:00", "type": "sight", "text": "八大关风景区", "sub": "万国建筑群"}, {"time": "12:00", "type": "food", "text": "午餐：船歌鱼水饺", "sub": "推荐墨鱼水饺"}, {"time": "14:30", "type": "sight", "text": "小麦岛公园", "sub": "现实版'塞尔达'草地"}]}, {"id": "day3", "date": "2026-02-11", "weekday": "周三", "city": "烟台", "title": "转战烟台", "activities": [{"time": "10:29", "type": "transport", "text": "青岛站出发 (C6568)", "sub": "双人票: ¥160 | 老火车站"}, {"time": "14:00", "type": "hotel", "text": "入住: 你好烟台二马路", "sub": "入住码: DGJ253 | 海景房"}, {"time": "18:00", "type": "food", "text": "晚餐: 烟台小海鲜", "sub": "滨海广场附近"}]}, {"id": "day4", "date": "2026-02-12", "weekday": "周四", "city": "烟台", "title": "养马岛环岛", "activities": [{"time": "09:00", "type": "transport", "text": "前往养马岛", "sub": "打车约40分钟"}, {"time": "10:30", "type": "activity", "text": "租电动车环岛", "sub": "海螺洞、樟岛、秦风崖"}, {"time": "16:00", "type": "sight", "text": "返程看日落", "sub": "海风大，注意保暖"}]}, {"id": "day5", "date": "2026-02-13", "weekday": "周五", "city": "高邮", "title": "返程", "activities": [{"time": "15:12", "type": "transport", "text": "D2872 (烟台 -> 高邮)", "sub": "⚠️ 需购双人票"}, {"time": "19:42", "type": "home", "text": "抵达高邮", "sub": "行程结束"}]}]};
+            let appData = {};
+            let isEditing = false;
+            let weatherCache = {};
+            const ICONS = { transport: "🚄", hotel: "🏨", sight: "📷", food: "🍴", activity: "🚲", home: "🏠", warning: "⚠️" };
+
+            async function init() {
+                const local = localStorage.getItem('appleTrip_final');
+                appData = local ? JSON.parse(local) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+                render();
+                await fetchWeather();
+            }
+
+            async function fetchWeather() {
+                const locs = {"title": "Trip to Qingdao & Yantai", "subtitle": "高志航 & 仇乐言 · 2026", "budget": {"total": 4000, "spent": 1740.6399999999999}, "locations": {"青岛": {"lat": 36.0671, "lon": 120.3826}, "烟台": {"lat": 37.4638, "lon": 121.4479}, "高邮": {"lat": 32.7833, "lon": 119.4333}}, "itinerary": [{"id": "day1", "date": "2026-02-09", "weekday": "周一", "city": "青岛", "title": "抵达青岛 & 入住", "activities": [{"time": "09:10", "type": "transport", "text": "高邮站出发 (D2866)", "sub": "05车 11A | 双人票: ¥386"}, {"time": "14:30", "type": "hotel", "text": "入住: 海友青岛五四广场", "sub": "入住码: GE2243 | 家庭房"}, {"time": "16:00", "type": "warning", "text": "避雷提醒", "sub": "不去大学路，人多且累"}, {"time": "16:30", "type": "sight", "text": "奥帆中心 & 情人坝", "sub": "日落绝佳观测点"}]}, {"id": "day2", "date": "2026-02-10", "weekday": "周二", "city": "青岛", "title": "小麦岛 & 八大关", "activities": [{"time": "09:00", "type": "sight", "text": "八大关风景区", "sub": "万国建筑群"}, {"time": "12:00", "type": "food", "text": "午餐：船歌鱼水饺", "sub": "推荐墨鱼水饺"}, {"time": "14:30", "type": "sight", "text": "小麦岛公园", "sub": "现实版'塞尔达'草地"}]}, {"id": "day3", "date": "2026-02-11", "weekday": "周三", "city": "烟台", "title": "转战烟台", "activities": [{"time": "10:29", "type": "transport", "text": "青岛站出发 (C6568)", "sub": "双人票: ¥160 | 老火车站"}, {"time": "14:00", "type": "hotel", "text": "入住: 你好烟台二马路", "sub": "入住码: DGJ253 | 海景房"}, {"time": "18:00", "type": "food", "text": "晚餐: 烟台小海鲜", "sub": "滨海广场附近"}]}, {"id": "day4", "date": "2026-02-12", "weekday": "周四", "city": "烟台", "title": "养马岛环岛", "activities": [{"time": "09:00", "type": "transport", "text": "前往养马岛", "sub": "打车约40分钟"}, {"time": "10:30", "type": "activity", "text": "租电动车环岛", "sub": "海螺洞、樟岛、秦风崖"}, {"time": "16:00", "type": "sight", "text": "返程看日落", "sub": "海风大，注意保暖"}]}, {"id": "day5", "date": "2026-02-13", "weekday": "周五", "city": "高邮", "title": "返程", "activities": [{"time": "15:12", "type": "transport", "text": "D2872 (烟台 -> 高邮)", "sub": "⚠️ 需购双人票"}, {"time": "19:42", "type": "home", "text": "抵达高邮", "sub": "行程结束"}]}]}.locations;
+                const cities = [...new Set(appData.itinerary.map(d => d.city))];
+
+                for (let city of cities) {
+                    if (locs[city]) {
+                        try {
+                            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${locs[city].lat}&longitude=${locs[city].lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`);
+                            const data = await res.json();
+                            weatherCache[city] = data.daily;
+                        } catch(e) { console.log("Weather error", e); }
+                    }
+                }
+                render();
+            }
+
+            function getWeather(city, dateStr) {
+                if (!weatherCache[city]) return null;
+                const idx = weatherCache[city].time.indexOf(dateStr);
+                if (idx === -1) return null;
+
+                const wmo = { 0:"☀️", 1:"🌤", 2:"☁️", 3:"☁️", 45:"🌫", 51:"🌧", 61:"🌧", 71:"❄️" };
+                const code = weatherCache[city].weathercode[idx];
+                const min = weatherCache[city].temperature_2m_min[idx];
+                const max = weatherCache[city].temperature_2m_max[idx];
+
+                let tips = "舒适";
+                const avg = (min + max)/2;
+                if (avg < 5) tips = "穿羽绒服";
+                else if (avg < 15) tips = "穿大衣";
+
+                return { icon: wmo[code]||"?", temp: `${min}°~${max}°`, tips: tips };
+            }
+
+            function render() {
+                const pct = Math.min((appData.budget.spent / appData.budget.total)*100, 100);
+                const remain = appData.budget.total - appData.budget.spent;
+
+                let html = `
+                    <div class="nav-bar">
+                        <div class="nav-title">${appData.subtitle}</div>
+                        <div class="nav-large-title">${appData.title}</div>
+                    </div>
+
+                    <div class="budget-card">
+                        <div class="budget-row">
+                            <div><div style="opacity:0.8;font-size:12px">剩余预算</div><div class="budget-amt">¥${remain.toFixed(0)}</div></div>
+                            <div style="text-align:right"><div style="opacity:0.8;font-size:12px">已用</div><div style="font-weight:600">¥${appData.budget.spent.toFixed(0)}</div></div>
+                        </div>
+                        <div class="budget-progress"><div class="budget-bar" style="width:${pct}%"></div></div>
+                    </div>
+                `;
+
+                appData.itinerary.forEach((day, dIdx) => {
+                    const w = getWeather(day.city, day.date);
+                    let wHtml = w ? `<div class="weather-widget"><span>${w.icon}</span><span class="weather-temp">${w.temp}</span><span class="weather-desc">${w.tips}</span></div>` : `<div class="weather-widget" style="font-size:12px;color:#999">正在获取天气...</div>`;
+
+                    let actsHtml = "";
+                    day.activities.forEach((act, aIdx) => {
+                        actsHtml += `
+                        <li class="activity-item">
+                            <div class="time-col" contenteditable="${isEditing}" onblur="upd(${dIdx},${aIdx},'time',this.innerText)">${act.time}</div>
+                            <div class="content-col">
+                                <div class="act-title"><span class="icon">${ICONS[act.type]||'📍'}</span><span contenteditable="${isEditing}" onblur="upd(${dIdx},${aIdx},'text',this.innerText)">${act.text}</span></div>
+                                <div class="act-sub" contenteditable="${isEditing}" onblur="upd(${dIdx},${aIdx},'sub',this.innerText)">${act.sub}</div>
+                            </div>
+                            <div class="delete-btn" onclick="del(${dIdx},${aIdx})">✕</div>
+                        </li>`;
+                    });
+
+                    html += `
+                    <div class="day-container ${isEditing?'editing':''}">
+                        <div class="day-header">
+                            <div class="day-date">${day.date.split('-')[1]}月${day.date.split('-')[2]}日</div>
+                            <div class="day-weekday">${day.weekday} · ${day.city}</div>
+                        </div>
+                        <div class="card">${wHtml}<ul class="activity-list">${actsHtml}</ul></div>
+                    </div>`;
+                });
+
+                document.getElementById('app').innerHTML = html;
+            }
+
+            window.toggleEdit = () => { isEditing = !isEditing; document.getElementById('editBtn').innerText = isEditing ? "完成" : "编辑"; document.getElementById('saveBtn').style.display = isEditing ? "block" : "none"; document.getElementById('resetBtn').style.display = isEditing ? "block" : "none"; render(); };
+            window.upd = (d,a,k,v) => { appData.itinerary[d].activities[a][k] = v; };
+            window.del = (d,a) => { if(confirm("删除?")) { appData.itinerary[d].activities.splice(a,1); render(); } };
+            window.saveData = () => { localStorage.setItem('appleTrip_final', JSON.stringify(appData)); alert("已保存"); isEditing=false; toggleEdit(); };
+            window.resetData = () => { if(confirm("重置?")) { localStorage.removeItem('appleTrip_final'); init(); } };
+
+            init();
+        </script>
+    </body>
+    </html>
+    
