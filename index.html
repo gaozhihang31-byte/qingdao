@@ -19,6 +19,8 @@
                 overflow-x: hidden; -webkit-tap-highlight-color: transparent;
                 background-image: radial-gradient(circle at 10% 20%, rgba(255, 46, 99, 0.15) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(157, 80, 255, 0.15) 0%, transparent 40%);
             }
+
+            /* 动画 */
             @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } 60% { transform: scale(1); } }
             @keyframes wave { 0% { box-shadow: 0 0 0 0 rgba(255, 46, 99, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 46, 99, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 46, 99, 0); } }
 
@@ -31,37 +33,49 @@
             .timer-box div:first-child { font-size: 12px; color: var(--text-sub); text-transform: uppercase; }
             .timer-box div:last-child { font-size: 20px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
 
-            /* 音乐控制区 */
             .music-controls { display: flex; gap: 10px; }
             .music-btn { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; }
             .music-btn.playing { border-color: #FF2E63; background: rgba(255,46,99,0.2); animation: wave 2s infinite; }
-
-            .qq-btn { width: 44px; height: 44px; border-radius: 50%; background: #31C27C; /* QQ Music Green */ border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+            .qq-btn { width: 44px; height: 44px; border-radius: 50%; background: #31C27C; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
             .qq-icon { width: 24px; height: 24px; fill: white; }
+
+            .weather-wrap { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 24px; scrollbar-width: none; }
+            .w-card { min-width: 90px; height: 100px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
 
             .map-container { margin: 0 24px 24px; height: 200px; background: #1c1c1e; border-radius: 24px; border: 1px solid var(--card-border); overflow: hidden; position: relative; z-index: 1; }
             #map { width: 100%; height: 100%; background: #222; }
             .map-tag { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.7); color:white; padding: 4px 10px; border-radius: 10px; font-size: 10px; z-index: 500; font-weight: bold; }
 
-            .list-box { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(10px); }
-            .list-item { padding: 14px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-            .list-item:last-child { border-bottom: none; }
+            .taxi-btns { display: flex; gap: 10px; margin: 0 24px 24px; }
+            .taxi-item { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); padding: 15px; border-radius: 16px; text-align: center; font-weight: 600; cursor: pointer; }
 
             .check-section { margin: 0 24px 24px; }
             .check-head { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 0 5px; }
+            .list-box { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(10px); }
+            .list-item { padding: 14px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
             .c-circle { width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; margin-right: 12px; position: relative; }
             .list-item.done .c-circle { border-color: #32D74B; background: rgba(50,215,75,0.2); }
             .list-item.done .c-text { text-decoration: line-through; color: #666; }
             .c-del { margin-left: auto; color: #FF453A; padding: 5px; display: none; }
             .list-item.editing .c-del { display: block; }
 
-            .wallet-card { margin: 0 24px 30px; padding: 24px; background: var(--accent-grad); border-radius: 24px; color: white; position: relative; overflow: hidden; box-shadow: 0 15px 40px -10px rgba(255, 46, 99, 0.4); }
+            /* --- 钱包 & 账单明细 --- */
+            .wallet-section { margin: 0 24px 30px; }
+            .wallet-card { padding: 24px; background: var(--accent-grad); border-radius: 24px; color: white; position: relative; overflow: hidden; box-shadow: 0 15px 40px -10px rgba(255, 46, 99, 0.4); margin-bottom: 15px; }
             .wallet-card::after { content:''; position: absolute; top:-50%; right:-50%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%); filter: blur(40px); }
             .add-btn { position: absolute; top: 24px; right: 24px; width: 32px; height: 32px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-            .weather-wrap { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 24px; scrollbar-width: none; }
-            .w-card { min-width: 90px; height: 100px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+            /* 新增：账单列表样式 */
+            .bill-list { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); overflow: hidden; margin-top: 10px; }
+            .bill-header { padding: 12px 20px; font-size: 12px; color: var(--text-sub); background: rgba(255,255,255,0.03); display: flex; justify-content: space-between; }
+            .bill-item { padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; }
+            .bill-item:last-child { border-bottom: none; }
+            .bill-name { font-size: 15px; color: white; }
+            .bill-cost { font-weight: 700; color: #FF2E63; margin-right: 10px; }
+            .bill-del { font-size: 18px; color: #666; cursor: pointer; padding: 5px; }
+            .bill-del:hover { color: #FF453A; }
 
+            /* 行程列表 */
             .day-group { margin-bottom: 30px; }
             .day-meta { padding: 0 28px 8px; display: flex; justify-content: space-between; align-items: flex-end; }
             .d-date { font-size: 20px; font-weight: 700; color: #fff; }
@@ -77,6 +91,7 @@
             .dock-icon { font-size: 22px; cursor: pointer; opacity: 0.8; color: white; transition: 0.2s; }
             .dock-icon.active { color: #FF2E63; opacity: 1; transform: scale(1.2); }
 
+            /* 弹窗 */
             .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 999; display: none; align-items: center; justify-content: center; }
             .modal-bg.show { display: flex; }
             .modal-box { background: #1C1C1E; width: 80%; border-radius: 24px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); }
@@ -84,9 +99,6 @@
             .btn-row { display: flex; gap: 10px; margin-top: 10px; }
             .btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; font-size: 16px; }
             .btn-ok { background: var(--accent); color: white; }
-
-            .taxi-btns { display: flex; gap: 10px; margin: 0 24px 24px; }
-            .taxi-item { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); padding: 15px; border-radius: 16px; text-align: center; font-weight: 600; cursor: pointer; }
             .taxi-card { background: white; color: black; padding: 40px 20px; border-radius: 24px; text-align: center; width: 85%; }
         </style>
     </head>
@@ -124,11 +136,15 @@
             <div class="list-box" id="checkList"></div>
         </div>
 
-        <div class="wallet-card">
-            <div class="add-btn" onclick="openModal('exModal')">＋</div>
-            <div style="font-size:13px;opacity:0.8;font-weight:600">REMAINING BUDGET</div>
-            <div style="font-size:40px;font-weight:800;margin:10px 0" id="remainBudget">¥...</div>
-            <div style="font-size:12px;opacity:0.6">Total Spent: ¥<span id="totalSpent"></span></div>
+        <div class="wallet-section">
+            <div class="wallet-card">
+                <div class="add-btn" onclick="openModal('exModal')">＋</div>
+                <div style="font-size:13px;opacity:0.8;font-weight:600">REMAINING BUDGET</div>
+                <div style="font-size:40px;font-weight:800;margin:10px 0" id="remainBudget">¥...</div>
+                <div style="font-size:12px;opacity:0.6">Total Spent: ¥<span id="totalSpent"></span></div>
+            </div>
+
+            <div class="bill-list" id="billList"></div>
         </div>
 
         <div id="itineraryBox"></div>
@@ -139,117 +155,103 @@
             <div class="dock-icon" onclick="resetAll()">↻</div>
         </div>
 
-        <div class="modal-bg" id="actModal">
-            <div class="modal-box"><h3>编辑活动</h3><input id="actTime"><input id="actText"><input id="actSub"><div class="btn-row"><button class="btn" onclick="deleteAct()">删除</button><button class="btn btn-ok" onclick="saveAct()">保存</button></div><div style="text-align:center;margin-top:10px;font-size:12px;color:#666" onclick="closeModal('actModal')">取消</div></div>
-        </div>
-        <div class="modal-bg" id="exModal">
-            <div class="modal-box"><h3>记一笔</h3><input id="exName" placeholder="项目"><input id="exCost" type="number" placeholder="金额"><div class="btn-row"><button class="btn" onclick="closeModal('exModal')">取消</button><button class="btn btn-ok" onclick="saveExpense()">保存</button></div></div>
-        </div>
-        <div class="modal-bg" id="addCheckModal">
-            <div class="modal-box"><h3>添加物品</h3><input id="newCheckText"><div class="btn-row"><button class="btn" onclick="closeModal('addCheckModal')">取消</button><button class="btn btn-ok" onclick="addCheckItem()">添加</button></div></div>
-        </div>
-        <div class="modal-bg" id="taxiModal" onclick="this.classList.remove('show')">
-            <div class="taxi-card" onclick="event.stopPropagation()"><div style="color:#888;margin-bottom:10px">SHOW TO DRIVER</div><div style="font-size:26px;font-weight:800;margin-bottom:20px" id="taxiBigName"></div><div style="font-size:18px;background:#f5f5f5;padding:15px;border-radius:12px" id="taxiBigAddr"></div></div>
-        </div>
+        <div class="modal-bg" id="actModal"><div class="modal-box"><h3>编辑活动</h3><input id="actTime"><input id="actText"><input id="actSub"><div class="btn-row"><button class="btn" onclick="deleteAct()">删除</button><button class="btn btn-ok" onclick="saveAct()">保存</button></div><div style="text-align:center;margin-top:10px;font-size:12px;color:#666" onclick="closeModal('actModal')">取消</div></div></div>
+        <div class="modal-bg" id="exModal"><div class="modal-box"><h3>记一笔</h3><input id="exName" placeholder="项目 (如: 奶茶)"><input id="exCost" type="number" placeholder="金额 (¥)"><div class="btn-row"><button class="btn" onclick="closeModal('exModal')">取消</button><button class="btn btn-ok" onclick="saveExpense()">保存</button></div></div></div>
+        <div class="modal-bg" id="addCheckModal"><div class="modal-box"><h3>添加物品</h3><input id="newCheckText"><div class="btn-row"><button class="btn" onclick="closeModal('addCheckModal')">取消</button><button class="btn btn-ok" onclick="addCheckItem()">添加</button></div></div></div>
+        <div class="modal-bg" id="taxiModal" onclick="this.classList.remove('show')"><div class="taxi-card" onclick="event.stopPropagation()"><div style="color:#888;margin-bottom:10px">SHOW TO DRIVER</div><div style="font-size:26px;font-weight:800;margin-bottom:20px" id="taxiBigName"></div><div style="font-size:18px;background:#f5f5f5;padding:15px;border-radius:12px" id="taxiBigAddr"></div></div></div>
 
-        <audio id="bgm" loop preload="auto" crossorigin="anonymous">
-            <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_ad2bc42c7f.mp3" type="audio/mpeg">
-        </audio>
+        <audio id="bgm" loop preload="auto" crossorigin="anonymous"><source src="https://music.163.com/song/media/outer/url?id=26217171.mp3" type="audio/mpeg"></audio>
 
         <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
         <script>
-            const DATA = {"title": "言言和她老公的山东之旅", "subtitle": "2026 ROMANTIC TRIP", "start_date": "2026-02-09 09:10:00", "end_date": "2026-02-13 19:42:00", "bgm_url": "https://cdn.pixabay.com/audio/2022/03/10/audio_ad2bc42c7f.mp3", "qq_music_link": "https://y.qq.com/n/ryqq/playlist/8783363024", "budget": {"total": 4000, "fixed_spent": 1740.64}, "weather_locs": {"青岛": {"lat": 36.0671, "lon": 120.3826}, "烟台": {"lat": 37.4638, "lon": 121.4479}, "高邮": {"lat": 32.7833, "lon": 119.4333}}, "hotels": [{"city": "青岛", "name": "海友酒店(五四广场店)", "address": "市南区 南京路33号"}, {"city": "烟台", "name": "你好酒店(滨海广场店)", "address": "芝罘区 二马路95号"}], "map_points": {"高邮": [32.7833, 119.4333], "青岛": [36.0671, 120.3826], "烟台": [37.4638, 121.4479], "养马岛": [37.4526, 121.6166]}, "default_checklist": [{"text": "身份证 (原件)", "done": false}, {"text": "学生证", "done": false}, {"text": "充电宝", "done": false}, {"text": "自拍杆", "done": false}], "itinerary": [{"date": "2026-02-09", "weekday": "周一", "city": "青岛", "title": "抵达 & 入住", "activities": [{"time": "09:10", "type": "transport", "text": "高邮站出发", "sub": "D2866 (05车11A)"}, {"time": "14:30", "type": "hotel", "text": "海友酒店入住", "sub": "码: GE2243"}, {"time": "16:30", "type": "sight", "text": "奥帆中心日落", "sub": "情人坝"}]}, {"date": "2026-02-10", "weekday": "周二", "city": "青岛", "title": "小麦岛 & 八大关", "activities": [{"time": "09:00", "type": "sight", "text": "八大关", "sub": "万国建筑"}, {"time": "14:30", "type": "sight", "text": "小麦岛", "sub": "草地音乐会"}]}, {"date": "2026-02-11", "weekday": "周三", "city": "烟台", "title": "转战烟台", "activities": [{"time": "10:29", "type": "transport", "text": "前往烟台", "sub": "C6568 (04车08D)"}, {"time": "14:00", "type": "hotel", "text": "你好酒店入住", "sub": "码: DGJ253"}]}, {"date": "2026-02-12", "weekday": "周四", "city": "烟台", "title": "养马岛环岛", "activities": [{"time": "10:30", "type": "activity", "text": "租车环岛", "sub": "海螺洞"}, {"time": "16:00", "type": "sight", "text": "看日落", "sub": "返程"}]}, {"date": "2026-02-13", "weekday": "周五", "city": "高邮", "title": "返程", "activities": [{"time": "15:12", "type": "transport", "text": "D2872 返程", "sub": "烟台->高邮"}]}]};
+            const DATA = {"title": "言言和她老公的山东之旅", "subtitle": "2026 ROMANTIC TRIP", "start_date": "2026-02-09 09:10:00", "end_date": "2026-02-13 19:42:00", "bgm_url": "https://music.163.com/song/media/outer/url?id=26217171.mp3", "qq_music_link": "https://y.qq.com/n/ryqq/playlist/8783363024", "budget": {"total": 4000, "fixed_spent": 1740.64}, "weather_locs": {"青岛": {"lat": 36.0671, "lon": 120.3826}, "烟台": {"lat": 37.4638, "lon": 121.4479}, "高邮": {"lat": 32.7833, "lon": 119.4333}}, "hotels": [{"city": "青岛", "name": "海友酒店(五四广场店)", "address": "市南区 南京路33号"}, {"city": "烟台", "name": "你好酒店(滨海广场店)", "address": "芝罘区 二马路95号"}], "map_points": {"高邮": [32.7833, 119.4333], "青岛": [36.0671, 120.3826], "烟台": [37.4638, 121.4479], "养马岛": [37.4526, 121.6166]}, "default_checklist": [{"text": "身份证 (原件)", "done": false}, {"text": "学生证", "done": false}, {"text": "充电宝", "done": false}, {"text": "自拍杆", "done": false}], "itinerary": [{"date": "2026-02-09", "weekday": "周一", "city": "青岛", "title": "抵达 & 入住", "activities": [{"time": "09:10", "type": "transport", "text": "高邮站出发", "sub": "D2866 (05车11A)"}, {"time": "14:30", "type": "hotel", "text": "海友酒店入住", "sub": "码: GE2243"}, {"time": "16:30", "type": "sight", "text": "奥帆中心日落", "sub": "情人坝"}]}, {"date": "2026-02-10", "weekday": "周二", "city": "青岛", "title": "小麦岛 & 八大关", "activities": [{"time": "09:00", "type": "sight", "text": "八大关", "sub": "万国建筑"}, {"time": "14:30", "type": "sight", "text": "小麦岛", "sub": "草地音乐会"}]}, {"date": "2026-02-11", "weekday": "周三", "city": "烟台", "title": "转战烟台", "activities": [{"time": "10:29", "type": "transport", "text": "前往烟台", "sub": "C6568 (04车08D)"}, {"time": "14:00", "type": "hotel", "text": "你好酒店入住", "sub": "码: DGJ253"}]}, {"date": "2026-02-12", "weekday": "周四", "city": "烟台", "title": "养马岛环岛", "activities": [{"time": "10:30", "type": "activity", "text": "租车环岛", "sub": "海螺洞"}, {"time": "16:00", "type": "sight", "text": "看日落", "sub": "返程"}]}, {"date": "2026-02-13", "weekday": "周五", "city": "高邮", "title": "返程", "activities": [{"time": "15:12", "type": "transport", "text": "D2872 返程", "sub": "烟台->高邮"}]}]};
             let state = { expenses: [], checklist: JSON.parse(JSON.stringify(DATA.default_checklist)), itinerary: JSON.parse(JSON.stringify(DATA.itinerary)), editing: false };
             let target = {d:-1, a:-1};
             let map = null;
 
             async function init() {
-                const local = localStorage.getItem('final_qq_v2');
+                const local = localStorage.getItem('billing_app_v1');
                 if(local) state = {...state, ...JSON.parse(local)};
 
                 renderTimer(); renderWeather(); renderBudget(); renderChecklist(); renderItinerary();
                 setTimeout(initMap, 500);
             }
 
-            // === 音乐逻辑 ===
-            function toggleMusic() {
-                const audio = document.getElementById('bgm');
-                const btn = document.getElementById('musicBtn');
-                if (audio.paused) {
-                    audio.play().then(() => btn.classList.add('playing')).catch(()=>alert('请先点击页面任意处'));
+            // === 音乐 ===
+            function toggleMusic() { const audio = document.getElementById('bgm'), btn = document.getElementById('musicBtn'); if(audio.paused){ audio.play().then(()=>btn.classList.add('playing')).catch(()=>{}); }else{ audio.pause(); btn.classList.remove('playing'); } }
+            function openQQMusic() { window.location.href = DATA.qq_music_link; }
+
+            // === 核心升级：账单明细 ===
+            function renderBudget() {
+                // 1. 计算总额
+                const u = state.expenses.reduce((s,i)=>s+Number(i.cost),0);
+                const t = DATA.budget.fixed_spent + u;
+                document.getElementById('remainBudget').innerText = `¥${(DATA.budget.total - t).toFixed(0)}`;
+                document.getElementById('totalSpent').innerText = t.toFixed(0);
+
+                // 2. 渲染明细列表
+                const list = document.getElementById('billList');
+                if (state.expenses.length === 0) {
+                    list.innerHTML = '<div style="padding:15px;text-align:center;font-size:12px;color:#666">暂无消费记录</div>';
                 } else {
-                    audio.pause();
-                    btn.classList.remove('playing');
+                    // 反转数组，最新的显示在最上面
+                    list.innerHTML = state.expenses.map((ex, i) => `
+                        <div class="bill-item">
+                            <div class="bill-name">${ex.name}</div>
+                            <div style="display:flex;align-items:center">
+                                <div class="bill-cost">-¥${ex.cost}</div>
+                                <div class="bill-del" onclick="delExpense(${i})">✕</div>
+                            </div>
+                        </div>
+                    `).reverse().join('');
                 }
             }
 
-            function openQQMusic() {
-                // 打开 QQ 音乐链接
-                window.location.href = DATA.qq_music_link;
+            function saveExpense() {
+                const n = document.getElementById('exName').value;
+                const c = document.getElementById('exCost').value;
+                if(n && c) {
+                    state.expenses.push({name:n, cost:c});
+                    save(); renderBudget(); closeModal('exModal');
+                    document.getElementById('exName').value=''; document.getElementById('exCost').value='';
+                }
             }
 
-            // --- Map ---
-            function initMap() {
-                if(map) return;
-                map = L.map('map', {zoomControl:false, attributionControl:false}).setView([36.5, 121.0], 7);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom: 19}).addTo(map);
-                const pts = [];
-                Object.values(DATA.map_points).forEach(p => {
-                    L.circleMarker(p, {radius:6, color:'#FF2E63', fillColor:'#FF2E63', fillOpacity:1}).addTo(map);
-                    pts.push(p);
-                });
-                if(pts.length>1) L.polyline(pts, {color:'#FF2E63', weight:3, dashArray:'5,5'}).addTo(map);
+            function delExpense(reverseIndex) {
+                // 因为显示时 reverse 了，删除时要找回原始索引
+                const realIndex = state.expenses.length - 1 - reverseIndex;
+                if(confirm('删除这笔记录? 钱会退回预算。')) {
+                    state.expenses.splice(realIndex, 1);
+                    save(); renderBudget();
+                }
             }
-            function refreshMap() { if(map) map.invalidateSize(); }
 
-            // --- Edit ---
-            function toggleEdit() { state.editing=!state.editing; document.getElementById('editBtn').classList.toggle('active', state.editing); renderItinerary(); renderChecklist(); }
-            function renderItinerary() {
-                document.getElementById('itineraryBox').innerHTML = state.itinerary.map((day, dIdx) => `
-                    <div class="day-group">
-                        <div class="day-meta"><div class="d-date">${day.date.slice(5)} ${day.weekday}</div><div class="d-city" style="color:#FF80AB;font-weight:700">${day.city}</div></div>
-                        <div class="list-box">
-                            ${day.activities.map((act, aIdx) => `
-                                <div class="act-row" onclick="clickAct(${dIdx}, ${aIdx})">
-                                    <div class="act-time">${act.time}</div>
-                                    <div class="act-info"><div class="act-title">${act.text}</div><div class="act-sub">${act.sub}</div></div>
-                                    ${state.editing ? '<div class="edit-badge">✎</div>' : ''}
-                                </div>
-                            `).join('')}
-                            <div style="padding:15px;text-align:center;color:#FF80AB;font-size:12px;border-top:1px solid rgba(255,255,255,0.05);cursor:pointer" onclick="addAct(${dIdx})">＋ 添加活动</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            function clickAct(d, a) { target = {d, a}; const act = state.itinerary[d].activities[a]; document.getElementById('actTime').value=act.time; document.getElementById('actText').value=act.text; document.getElementById('actSub').value=act.sub; openModal('actModal'); }
-            function saveAct() { const t=document.getElementById('actTime').value, tx=document.getElementById('actText').value, s=document.getElementById('actSub').value; state.itinerary[target.d].activities[target.a]={time:t, text:tx, sub:s}; save(); renderItinerary(); closeModal('actModal'); }
-            function deleteAct() { if(confirm('删除?')) { state.itinerary[target.d].activities.splice(target.a,1); save(); renderItinerary(); closeModal('actModal'); } }
-            function addAct(d) { state.itinerary[d].activities.push({time:"00:00", text:"新计划", sub:"点击修改"}); save(); renderItinerary(); clickAct(d, state.itinerary[d].activities.length-1); }
+            // === 地图 ===
+            function initMap() { if(map) return; map=L.map('map',{zoomControl:false,attributionControl:false}).setView([36.5,121.0],7); L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map); const pts=[]; Object.values(DATA.map_points).forEach(p=>{L.circleMarker(p,{radius:6,color:'#FF2E63',fillColor:'#FF2E63',fillOpacity:1}).addTo(map);pts.push(p)}); if(pts.length>1)L.polyline(pts,{color:'#FF2E63',weight:3,dashArray:'5,5'}).addTo(map); }
+            function refreshMap(){ if(map) map.invalidateSize(); }
 
-            // --- Checklist ---
-            function renderChecklist() {
-                document.getElementById('checkList').innerHTML = state.checklist.map((item, idx) => `
-                    <div class="list-item ${item.done?'done':''} ${state.editing?'editing':''}">
-                        <div class="c-circle" onclick="toggleCheck(${idx})"></div>
-                        <div class="c-text" style="flex:1;color:white" onclick="toggleCheck(${idx})">${item.text}</div>
-                        ${state.editing ? `<div class="c-del" onclick="delCheck(${idx})">✕</div>` : ''}
-                    </div>
-                `).join('');
-            }
-            function toggleCheck(idx) { state.checklist[idx].done=!state.checklist[idx].done; save(); renderChecklist(); }
-            function delCheck(idx) { state.checklist.splice(idx,1); save(); renderChecklist(); }
-            function addCheckItem() { const t=document.getElementById('newCheckText').value; if(t){ state.checklist.push({text:t,done:false}); save(); renderChecklist(); closeModal('addCheckModal'); document.getElementById('newCheckText').value=''; } }
+            // === 编辑 ===
+            function toggleEdit(){ state.editing=!state.editing; document.getElementById('editBtn').classList.toggle('active',state.editing); renderItinerary(); renderChecklist(); }
+            function renderItinerary() { document.getElementById('itineraryBox').innerHTML=state.itinerary.map((d,i)=>`<div class="day-group"><div class="day-meta"><div class="d-date">${d.date.slice(5)} ${d.weekday}</div><div class="d-city" style="color:#FF80AB;font-weight:700">${d.city}</div></div><div class="list-box">${d.activities.map((a,j)=>`<div class="act-row" onclick="clickAct(${i},${j})"><div class="act-time">${a.time}</div><div class="act-info"><div class="act-title">${a.text}</div><div class="act-sub">${a.sub}</div></div>${state.editing?'<div class="edit-badge">✎</div>':''}</div>`).join('')}<div style="padding:15px;text-align:center;color:#FF80AB;font-size:12px;border-top:1px solid rgba(255,255,255,0.05);cursor:pointer" onclick="addAct(${i})">＋ 添加活动</div></div></div>`).join(''); }
+            function clickAct(d,a){ target={d,a}; const act=state.itinerary[d].activities[a]; document.getElementById('actTime').value=act.time; document.getElementById('actText').value=act.text; document.getElementById('actSub').value=act.sub; openModal('actModal'); }
+            function saveAct(){ const t=document.getElementById('actTime').value, tx=document.getElementById('actText').value, s=document.getElementById('actSub').value; state.itinerary[target.d].activities[target.a]={time:t,text:tx,sub:s}; save(); renderItinerary(); closeModal('actModal'); }
+            function deleteAct(){ if(confirm('删除?')){ state.itinerary[target.d].activities.splice(target.a,1); save(); renderItinerary(); closeModal('actModal'); } }
+            function addAct(d){ state.itinerary[d].activities.push({time:"00:00",text:"新计划",sub:"点击修改"}); save(); renderItinerary(); clickAct(d,state.itinerary[d].activities.length-1); }
 
-            // --- Utils ---
-            function renderBudget() { const u=state.expenses.reduce((s,i)=>s+Number(i.cost),0); const t=DATA.budget.fixed_spent+u; document.getElementById('remainBudget').innerText = `¥${(DATA.budget.total-t).toFixed(0)}`; document.getElementById('totalSpent').innerText=t.toFixed(0); }
-            function saveExpense() { const n=document.getElementById('exName').value, c=document.getElementById('exCost').value; if(n&&c){ state.expenses.push({name:n, cost:c}); save(); renderBudget(); closeModal('exModal'); document.getElementById('exName').value='';document.getElementById('exCost').value=''; } }
-            function renderTimer() { setInterval(()=>{ const diff=new Date(DATA.start_date)-new Date(); const d=Math.floor(diff/86400000); document.getElementById('countdown').innerText=diff>0?`${d} DAYS`:"Enjoy!"; },1000); }
-            function renderWeather() { const box=document.getElementById('weatherBox'); box.innerHTML=Object.keys(DATA.weather_locs).map(c=>`<div class="w-card" id="w-${c}"><div style="font-size:12px;opacity:0.7">${c}</div><div>--°</div></div>`).join(''); Object.keys(DATA.weather_locs).forEach(async c=>{ try{const{lat,lon}=DATA.weather_locs[c];const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);const d=await r.json();const w={0:"☀️",1:"🌤",2:"☁️",3:"☁️",51:"🌧"};document.getElementById(`w-${c}`).innerHTML=`<div style="font-size:12px;font-weight:700;color:#FF80AB">${c}</div><div style="font-size:24px">${w[d.current_weather.weathercode]||"?"}</div><div style="font-size:18px">${Math.round(d.current_weather.temperature)}°</div>`;}catch(e){} }); }
-            function openModal(id){document.getElementById(id).classList.add('show')}
-            function closeModal(id){document.getElementById(id).classList.remove('show')}
-            function showTaxi(i){const h=DATA.hotels[i]; document.getElementById('taxiBigName').innerText=h.name; document.getElementById('taxiBigAddr').innerText=h.address; openModal('taxiModal'); }
-            function save(){localStorage.setItem('final_qq_v2', JSON.stringify(state))}
-            function resetAll(){if(confirm('Reset?')){localStorage.removeItem('final_qq_v2');location.reload()}}
+            // === 清单 ===
+            function renderChecklist(){ document.getElementById('checkList').innerHTML=state.checklist.map((item,i)=>`<div class="list-item ${item.done?'done':''} ${state.editing?'editing':''}"><div class="c-circle" onclick="toggleCheck(${i})"></div><div class="c-text" style="flex:1;color:white;margin-left:12px" onclick="toggleCheck(${i})">${item.text}</div>${state.editing?`<div class="c-del" onclick="delCheck(${i})">✕</div>`:''}</div>`).join(''); }
+            function toggleCheck(i){ state.checklist[i].done=!state.checklist[i].done; save(); renderChecklist(); }
+            function delCheck(i){ state.checklist.splice(i,1); save(); renderChecklist(); }
+            function addCheckItem(){ const t=document.getElementById('newCheckText').value; if(t){ state.checklist.push({text:t,done:false}); save(); renderChecklist(); closeModal('addCheckModal'); document.getElementById('newCheckText').value=''; } }
+
+            // === 通用 ===
+            function renderTimer(){ setInterval(()=>{ const diff=new Date(DATA.start_date)-new Date(); const d=Math.floor(diff/86400000); document.getElementById('countdown').innerText=diff>0?`${d} DAYS`:"Enjoy!"; },1000); }
+            function renderWeather(){ const box=document.getElementById('weatherBox'); box.innerHTML=Object.keys(DATA.weather_locs).map(c=>`<div class="w-card" id="w-${c}"><div style="font-size:12px;opacity:0.7">${c}</div><div>--°</div></div>`).join(''); Object.keys(DATA.weather_locs).forEach(async c=>{ try{const{lat,lon}=DATA.weather_locs[c];const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);const d=await r.json();const w={0:"☀️",1:"🌤",2:"☁️",3:"☁️",51:"🌧"};document.getElementById(`w-${c}`).innerHTML=`<div style="font-size:12px;font-weight:700;color:#FF80AB">${c}</div><div style="font-size:24px">${w[d.current_weather.weathercode]||"?"}</div><div style="font-size:18px">${Math.round(d.current_weather.temperature)}°</div>`;}catch(e){} }); }
+            function openModal(id){ document.getElementById(id).classList.add('show'); }
+            function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+            function showTaxi(i){ const h=DATA.hotels[i]; document.getElementById('taxiBigName').innerText=h.name; document.getElementById('taxiBigAddr').innerText=h.address; openModal('taxiModal'); }
+            function save(){ localStorage.setItem('billing_app_v1', JSON.stringify(state)); }
+            function resetAll(){ if(confirm('重置所有数据?')){ localStorage.removeItem('billing_app_v1'); location.reload(); } }
 
             init();
         </script>
